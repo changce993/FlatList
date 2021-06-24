@@ -1,21 +1,37 @@
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, FlatList } from 'react-native';
+import { Button, Input, Form } from './components/Atoms';
+import { Item } from './components/Molecules';
 
 export default function App() {
+  const [ products, setProducts ] = useState([]);
+  const [ name, setName ] = useState('');
+  const handleSubmit = () => {
+    const product = { name, id: products.length + Math.random()};
+    setProducts([ ...products, product ]);
+    setName('');
+  };
+  const handleDelete = itemId => setProducts(products.filter(item => item.id !== itemId));
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <Form>
+      <SafeAreaView/>
+      <Input
+        placeholderTextColor="#aaa"
+        placeholder="Name"
+        onChangeText={setName}
+        value={name}
+      />
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+      <Button title={"Agregar"} onPress={handleSubmit}/>
+
+      <FlatList
+        data={products}
+        keyExtractor={prod => prod.id}
+        renderItem={({ item }) => <Item key={item.id} item={item} handleDelete={handleDelete}/>}
+        style={{ width: "100%", marginTop: 12, marginBottom: 12 }}
+      />
+      <StatusBar style="auto" />
+    </Form>
+  );
+};
